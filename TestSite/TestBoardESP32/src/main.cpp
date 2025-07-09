@@ -1,18 +1,14 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
-
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(9600); // Start serial communication at 115200 baud
+  while (!Serial) {
+    ; // Wait for serial port to connect. Needed for native USB
+  }
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.println("Board is alive!"); // Print message every second
+  delay(1000); // Wait for 1 second
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
