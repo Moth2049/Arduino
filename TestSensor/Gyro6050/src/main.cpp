@@ -10,6 +10,7 @@
 #define SCREEN_HEIGHT 64
 #define OLED_RESET    -1
 #define OLED_ADDR     0x3C
+#define POT_PIN 34  // ESP32 analog pin for potentiometer
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Adafruit_MPU6050 mpu;
@@ -21,6 +22,8 @@ void setup() {
   Serial.println("Starting MPU6050 + OLED demo...");
 
   Wire.begin(21, 22); // ESP32 default I2C pins: SDA=21, SCL=22
+
+  pinMode(POT_PIN, INPUT); // Initialize potentiometer pin
 
   if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
     Serial.println("SSD1306 allocation failed");
@@ -50,12 +53,15 @@ void loop() {
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
+  int potValue = analogRead(POT_PIN); // Read potentiometer value
+
   Serial.print("Accel X: "); Serial.print(a.acceleration.x, 2);
   Serial.print(" Y: "); Serial.print(a.acceleration.y, 2);
   Serial.print(" Z: "); Serial.print(a.acceleration.z, 2);
   Serial.print(" | Gyro X: "); Serial.print(g.gyro.x, 2);
   Serial.print(" Y: "); Serial.print(g.gyro.y, 2);
-  Serial.print(" Z: "); Serial.println(g.gyro.z, 2);
+  Serial.print(" Z: "); Serial.print(g.gyro.z, 2);
+  Serial.print(" | Pot: "); Serial.println(potValue);
 
   display.clearDisplay();
   display.setTextSize(1);
@@ -81,6 +87,11 @@ void loop() {
   display.print("Y: "); display.println(g.gyro.y, 2);
   display.setCursor(70, 36);
   display.print("Z: "); display.println(g.gyro.z, 2);
+
+  // Draw Potentiometer value at the bottom
+  display.setCursor(0, 54);
+  display.print("Pot: ");
+  display.println(potValue);
 
   display.display();
   delay(500);
